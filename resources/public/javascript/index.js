@@ -11,7 +11,7 @@ $(document).ready(function() {
   editor.setTheme("ace/theme/monokai");
   editor.getSession().setMode("ace/mode/clojure");
 
-  $('#submit_text').on('click', function() {
+  $('#submit_link').on('click', function() {
     submitText(editor.getValue());
   })
 })

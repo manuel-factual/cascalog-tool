@@ -2,6 +2,9 @@
 /lib
 /classes
 /checkouts
+/doc
+/test
+/src/query_sandbox/query.clj
 pom.xml
 *.jar
 *.class
