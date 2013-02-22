@@ -1,9 +1,10 @@
 (ns cascalog-tool.smart-taps
   (:require [cascalog.conf :as cc]
             [cheshire.core :as json]
-            [hadoop-util.core :as hadoop]
-            [clojure.string :as s])
-  (:use [clojure.java.io :only (reader)])
+            [clj-http.client :as client]
+            [clojure.java.io :refer (reader)]
+            [clojure.string :as s]
+            [hadoop-util.core :as hadoop])
   (:import [org.apache.hadoop.fs PathFilter]))
 
 (def ^:const FACTUAL-DEFAULTS
@@ -59,11 +60,24 @@
   "Look at the first line of an hdfs path."
   ([path] (check-file path 1))
   ([path n]
-     (apply str
-            (interpose "\n"
-                       (hdfs-file->line-seq
-                        (first (get-hdfs-files-in-dir path))
-                        n)))))
+     (let [response
+           (apply str
+                  (interpose "\n"
+                             (hdfs-file->line-seq
+                              (first (get-hdfs-files-in-dir path))
+                              n)))]
+       (if (= -1 (.indexOf response "com.factual.common.thrift."))
+         response
+         ;get deserialized thrift
+         (:body
+          (client/get
+           (str
+            "http://dev101.la.prod.factual.com:5678/ds?path="
+            (let [full-path
+                  (first (get-hdfs-files-in-dir path))
+                  first-index (.indexOf full-path "/")]
+              (.substring full-path first-index))
+            "&rows=10&type=JSON")))))))
 
 (defn guess-type
   "Guess the type of file at the path.
