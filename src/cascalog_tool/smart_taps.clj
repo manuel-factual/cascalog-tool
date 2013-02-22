@@ -107,8 +107,8 @@
         (str
          "(def query\n"
          "  (<-\n"
-         "    [?input]"
-         "    ((hfs-seqfile \"" file "\") <fill in out-vars>)))"))
+         "    [<fill-in-vars>]"
+         "    ((hfs-seqfile \"" file "\") <fill-in-vars>)))"))
 
       "tsv"
       (let [out-vars (s/join " " (map str (repeat "?var")
@@ -124,7 +124,7 @@
       (str
        "(def query\n"
        "  (<-\n"
-       "    [?input]"
+       "    [?input]\n"
        "    ((hfs-textline \"" file "\") ?input-json)\n"
        "    (json/decode ?input-json true :> ?input)))")
 
