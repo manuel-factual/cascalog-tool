@@ -127,19 +127,26 @@
 
 (defn preview-file
   [file]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body (st/check-file file 10)})
+  (if file
+    {:status 200
+     :headers {"Content-Type" "text/plain"}
+     :body (st/check-file file 10)}
+    {:status 400
+     :body "Specify file-path"}
+    ))
 
 (defn get-tap-template
   [file]
-  (if-let [template (st/tap-template file)]
-    {:status 200
-     :headers {"Content-Type" "text/plain"}
-     :body template}
-    {:status 404
-     :headers {"Content-Type" "text/plain"}
-     :body "File not found in hdfs."}))
+  (if (nil? file)
+    {:status 400
+     :body "Specify file-path"}
+    (if-let [template (st/tap-template file)]
+      {:status 200
+       :headers {"Content-Type" "text/plain"}
+       :body template}
+      {:status 404
+       :headers {"Content-Type" "text/plain"}
+       :body "File not found in hdfs."})))
 
 (defroutes app-routes
   (GET "/" [] (index-page))

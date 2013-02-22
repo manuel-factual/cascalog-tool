@@ -32,37 +32,38 @@
    If the path itself is a file, this returns a sequence with
    just the given path."
   (let [statuses (.listStatus
-                  (get-filesystem)
-                  (hadoop/path path)
-                  (reify
-                    PathFilter
-                    (accept [this f]
-                                        ; Only accept non-hidden files
-                      (not (re-find #"^[._]" (.getName f))))))]
+                    (get-filesystem)
+                    (hadoop/path path)
+                    (reify
+                      PathFilter
+                      (accept [this f]
+                       ; Only accept non-hidden files
+                       (not (re-find #"^[._]" (.getName f))))))]
     (keep
-     (fn [status]
-       (when-not (.isDir status)
-         (.toString (.getPath status))))
-     statuses)))
+      (fn [status]
+        (when-not (.isDir status)
+          (.toString (.getPath status))))
+      statuses)))
 
 (defn hdfs-file->line-seq
   "Get a line-seq of the given file."
-  [path]
-  (with-open [stream (path->input-stream path)]
-    (-> stream
-        line-seq)))
-
-(defn hdfs-path->line-seq
-  "Get a line-seq of a given path. If a path is a directory, a concatenated sequence of lines
-   of all non-hidden files from the directory is returned"
-  [path]
-  (mapcat hdfs-file->line-seq (get-hdfs-files-in-dir path)))
+  ([path]
+     (hdfs-file->line-seq path :all))
+  ([path number-of-lines]
+      (with-open [stream (path->input-stream path)]
+        (if (= number-of-lines :all)
+          (-> stream line-seq vec)
+          (->> stream line-seq (take number-of-lines) vec)))))
 
 (defn check-file
   "Look at the first line of an hdfs path."
   ([path] (check-file path 1))
   ([path n]
-     (apply str (interpose "\n"  (take n (hdfs-path->line-seq path))))))
+     (apply str
+            (interpose "\n"
+                       (hdfs-file->line-seq
+                        (first (get-hdfs-files-in-dir path))
+                        n)))))
 
 (defn guess-type
   "Guess the type of file at the path.
