@@ -1,8 +1,7 @@
 (ns cascalog-tool.smart-taps
   (:require [cascalog.conf :as cc]
             [cheshire.core :as json]
-            [hadoop-util.core :as hadoop]
-            [resolve.config.protocols.common :as com])
+            [hadoop-util.core :as hadoop])
   (:use [clojure.java.io :only (reader)])
   (:import [org.apache.hadoop.fs PathFilter]))
 
@@ -63,7 +62,7 @@
   "Look at the first line of an hdfs path."
   ([path] (check-file path 1))
   ([path n]
-     (apply str (interpose "\n"  (take n (hdfs-file->line-seq path))))))
+     (apply str (interpose "\n"  (take n (hdfs-path->line-seq path))))))
 
 (defn guess-type
   "Guess the type of file at the path.
