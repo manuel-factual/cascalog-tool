@@ -7,8 +7,8 @@
 
     "output"
       (str
-       "(def query\n"
+       "(defn output []\n"
        "  (?- " (condp = (:output_type arg-map)
-                  "plain_text" (str "(hfs-textline \"" (:output_path arg-map) "\")\n")
-                  "seqfile"    (str "(hfs-seqfile \"" (:output_path arg-map) "\")\n"))
+                  "plain_text" (str "(hfs-textline \"" (:output_path arg-map) "\" :sinkmode :replace)\n")
+                  "seqfile"    (str "(hfs-seqfile \"" (:output_path arg-map) "\"  :sinkmode :replace)\n"))
        "    " (:subquery_to_output arg-map) "))")))
