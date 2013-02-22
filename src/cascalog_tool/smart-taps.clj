@@ -61,8 +61,9 @@
 
 (defn check-file
   "Look at the first line of an hdfs path."
-  [path]
-  (first (hdfs-file->line-seq path)))
+  ([path] (check-file path 1))
+  ([path n]
+     (apply str (interpose "\n"  (take n (hdfs-file->line-seq path))))))
 
 (defn guess-type
   "Guess the type of file at the path.
@@ -77,7 +78,7 @@
        (.substring first-line 0 first-bang ))
 
      (not= -1 (.indexOf first-line "\t"))
-     "tsv"
+     (str "tsv:" (inc (count (filter (partial = \tab) first-line))))
 
      (and (not= -1 (.indexOf first-line "{"))
           (not= -1 (.indexOf first-line "\"")))
