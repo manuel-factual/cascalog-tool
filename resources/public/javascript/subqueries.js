@@ -69,7 +69,7 @@ function selectText() {
 }
 
 $(document).ready(function() {
-  $("body").on("click", "pre.query_template, pre.input_template", selectText);
+  $("pre.query_template, pre.input_template").click(selectText);
   showActiveSubquery();
   $("#subquery_select").change(function () {
     showActiveSubquery();
