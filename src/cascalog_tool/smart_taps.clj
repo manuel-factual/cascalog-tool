@@ -98,7 +98,7 @@
   (let [[guess & extra] (guess-type file)]
     (condp #(.startsWith %2 %1) guess
       "SEQ"
-      (if (not= -1 (.indexOf "com.factual.common.thrift."))
+      (if (not= -1 (.indexOf guess "com.factual.common.thrift."))
         (str
          "(def query\n"
          "  (<-\n"
