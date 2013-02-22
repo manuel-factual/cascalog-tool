@@ -97,8 +97,8 @@
       (str
        "(def query\n"
        "  (<-\n"
-       "    [" out-vars "]\n"
-       "    ((hfs-seqfile \"" file "\") ?input-line)))")
+       "    [?input]\n"
+       "    ((hfs-seqfile \"" file "\") ?input)))")
 
       "tsv"
       (let [out-vars (s/join " " (map str (repeat "?var")

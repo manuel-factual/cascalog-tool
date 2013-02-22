@@ -1,14 +1,29 @@
-(ns cascalog-tool.hadoop-parser)
+(ns cascalog-tool.hadoop-parser
+  (:require [clj-http.client :as client]))
 
 (def HADOOP-JOB-URL-BASE
   "http://n103.la.prod.factual.com:50030/jobdetails.jsp?jobid=")
 
+(defn parse-status-from-job-url [job_url]
+  (try
+    (let [response (:body (client/get job_url))
+          status-matcher (re-matcher #"<b>Status:</b>\s+([^<]+)<br>" response)]
+      (if (re-find status-matcher)
+        (do
+          (println "Hello")
+          (second (re-groups status-matcher)))
+        nil))
+    (catch Exception e
+      nil)))
+
 (defn add-hadoop-step
   [output curr-step job-id]
-  (conj output
-    {:job_id job-id
-     :step   curr-step
-     :job_url (str HADOOP-JOB-URL-BASE job-id)}))
+  (let [job-url (str HADOOP-JOB-URL-BASE job-id)]
+    (conj output
+      {:job_id job-id
+       :step   curr-step
+       :job_url job-url
+       :job_status (parse-status-from-job-url job-url)})))
 
 (defn parse-hadoop-job-status [output-lines]
   (loop [curr-line (first output-lines)

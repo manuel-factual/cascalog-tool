@@ -4,6 +4,7 @@
   :dependencies [[org.clojure/clojure "1.4.0"]
                  [cascalog "1.9.0"]
                  [cheshire "4.0.0"]
+                 [clj-http "0.5.6"]
                  [compojure "1.1.1"]
                  [hiccup "1.0.2"]
                  [ring/ring-jetty-adapter "1.1.4"]

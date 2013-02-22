@@ -5,6 +5,7 @@
         [ring.adapter.jetty :only [run-jetty]])
   (:require [cascalog-tool.runner :as runner]
             [cascalog-tool.hadoop-parser :as hadoop-parser]
+            [cascalog-tool.smart-taps :as st]
             [cheshire.core :as json]
             [compojure.handler :as handler]
             [compojure.route :as route])
