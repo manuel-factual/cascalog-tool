@@ -56,8 +56,20 @@ function submitParentForm(input) {
   submitForm(input.parents(".subquery_form").first());
 }
 
-$(document).ready(function() {
+function selectText() {
+    if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(this);
+        range.select();
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(this);
+        window.getSelection().addRange(range);
+    }
+}
 
+$(document).ready(function() {
+  $("body").on("click", "pre.query_template, pre.input_template", selectText);
   showActiveSubquery();
   $("#subquery_select").change(function () {
     showActiveSubquery();
