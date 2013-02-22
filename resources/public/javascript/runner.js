@@ -81,10 +81,28 @@ function updateCallCollapsible(runner_output, data) {
   updateCollapsible(call_collapsible, header, call_collapse_content);
 }
 
+function updateSingleHadoopJobCollapsible(runner_output, job_id, job_status_map) {
+  var collapse_id = "hadoop_job_collapsible_" + job_id;
+  var link_url_content = $("<a>").attr("href", job_status_map["job_url"]).attr("target", "_blank").text("Job Tracker Url");
+  if (runner_output.find("#" + collapse_id).length == 0) {
+    runner_output.append(createCollapsible("Step " + job_status_map["step"], link_url_content, collapse_id));
+  }
+}
+
+function updateHadoopJobCollapsibles(runner_output, data) {
+  var hadoop_job_statuses = data["hadoop-job-status"];
+
+  for (var idx in hadoop_job_statuses) {
+    var this_status = hadoop_job_statuses[idx];
+    updateSingleHadoopJobCollapsible(runner_output, this_status["job_id"], this_status);
+  }
+}
+
 function updateRunnerOutput(data) {
   var runner_output = $("#runner_output");
   updateCompileCollapsible(runner_output, data);
   updateCallCollapsible(runner_output, data);
+  updateHadoopJobCollapsibles(runner_output, data);
 }
 
 function pollAndUpdateRunnerOutput() {

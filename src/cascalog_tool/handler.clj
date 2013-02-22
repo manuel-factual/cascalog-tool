@@ -4,7 +4,7 @@
         [ring.middleware.params :only [wrap-params]]
         [ring.adapter.jetty :only [run-jetty]])
   (:require [cascalog-tool.runner :as runner]
-            [cascalog-tool.smart-taps :as st]
+            [cascalog-tool.hadoop-parser :as hadoop-parser]
             [cheshire.core :as json]
             [compojure.handler :as handler]
             [compojure.route :as route])
@@ -76,10 +76,11 @@
         [:ul.nav.nav-stacked.nav-tabs
           [:li
             [:a.collapse_link]]]
-        [:div.content {:style "display:none"}]]]))
+        [:div.well.content {:style "display:none"}]]]))
 
 (defn get-lines-page []
-  (json/encode @runner/runner-output))
+  (json/encode
+    (assoc @runner/runner-output :hadoop-job-status (hadoop-parser/parse-hadoop-job-status (:call-errors @runner/runner-output)))))
 
 (defn run-query-func [text]
   (println "Got request")
