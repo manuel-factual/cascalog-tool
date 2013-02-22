@@ -75,7 +75,7 @@
         [:ul.nav.nav-stacked.nav-tabs
           [:li
             [:a.collapse_link]]]
-        [:div.content]]]))
+        [:div.content {:style "display:none"}]]]))
 
 (defn get-lines-page []
   (json/encode @runner/runner-output))

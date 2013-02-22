@@ -56,9 +56,15 @@
   (let [compile-ret-code (make-uberjar code)]
     (if (= compile-ret-code 0)
       (do
-        (set-status! :running)
-        (call-main)
-        (set-running! false))
+        (set-status! :calling)
+        (let [call-ret-code (call-main)]
+          (if (= call-ret-code 0)
+            (do
+              (set-status! :completed))
+            (do
+              (set-status! :call-fail)))
+          (set-running! false)
+          call-ret-code))
       (do
         (set-status! :compile-fail)
         (set-running! false)

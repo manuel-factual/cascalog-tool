@@ -53,10 +53,47 @@ function updateCompileCollapsible(runner_output, data) {
   updateCollapsible(compile_collapsible, header, compile_collapse_content);
 }
 
+function updateCallCollapsible(runner_output, data) {
+  var call_collapse_id = "call_output_collapsible";
+  if (runner_output.find("#" + call_collapse_id).length == 0) {
+    runner_output.append(createCollapsible("Call Output", "In progress", call_collapse_id));
+  }
+
+  var call_collapsible = runner_output.find("#" + call_collapse_id);
+
+  var call_output = data["call-output"].join("\n");
+  var call_errors = data["call-errors"].join("\n");
+  var call_collapse_content = $("<div>");
+
+  if (call_output && call_output.length > 0) {
+    var call_output_div = $("<pre>");
+    call_output_div.text(call_output);
+
+    call_collapse_content.append("<h3>Call Output</h3>");
+    call_collapse_content.append(call_output_div);
+  }
+
+  if (call_errors && call_errors.length > 0) {
+    var call_errors_div = $("<pre>");
+    call_errors_div.text(call_errors);
+    call_collapse_content.append("<h3>Call Errors</h3>");
+    call_collapse_content.append(call_errors_div);
+  }
+
+  var runner_status = data["status"];
+  var header = "Call Console Output";
+  if (runner_status == "calling")
+    header += " (in progress)";
+  else if (runner_status == "call-fail")
+    header += " (failed)";
+
+  updateCollapsible(call_collapsible, header, call_collapse_content);
+}
 
 function updateRunnerOutput(data) {
   var runner_output = $("#runner_output");
   updateCompileCollapsible(runner_output, data);
+  updateCallCollapsible(runner_output, data);
 }
 
 function pollAndUpdateRunnerOutput() {
