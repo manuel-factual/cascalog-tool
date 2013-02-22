@@ -2,6 +2,7 @@
 (ns query-sandbox.query
   (:require [cascalog.api :refer :all]
             [cascalog.ops :as c]
+            [cascalog-toolbox.core :refer (thrift-dirtree-to-map-tap)]
             [cheshire.core :as json]
             [clojure.string :as s])
   (:gen-class))

@@ -98,7 +98,7 @@
        "(def query\n"
        "  (<-\n"
        "    [?input]\n"
-       "    ((hfs-seqfile \"" file "\") ?input)))")
+       "    ((thrift-dirtree-to-map-tap \"" file "\") ?input)))")
 
       "tsv"
       (let [out-vars (s/join " " (map str (repeat "?var")
