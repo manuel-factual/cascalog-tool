@@ -9,12 +9,10 @@
     (let [response (:body (client/get job_url))
           status-matcher (re-matcher #"<b>Status:</b>\s+([^<]+)<br>" response)]
       (if (re-find status-matcher)
-        (do
-          (println "Hello")
-          (second (re-groups status-matcher)))
+        (second (re-groups status-matcher)))
         nil))
     (catch Exception e
-      nil)))
+      nil))
 
 (defn add-hadoop-step
   [output curr-step job-id]
