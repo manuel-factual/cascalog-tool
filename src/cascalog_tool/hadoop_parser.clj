@@ -10,9 +10,9 @@
           status-matcher (re-matcher #"<b>Status:</b>\s+([^<]+)<br>" response)]
       (if (re-find status-matcher)
         (second (re-groups status-matcher)))
-        nil))
+        nil)
     (catch Exception e
-      nil))
+      nil)))
 
 (defn add-hadoop-step
   [output curr-step job-id]
