@@ -34,6 +34,34 @@
     [:a#submit_link.btn.btn-success "Submit!"]
     [:div#runner_output]])
 
+(def subqueries-form-labels
+  {"input" [["path" "HDFS Path to read from"]]
+   "output" [["path" "HDFS Path to output to"]
+             ["subquery" "Subquery to output"]]})
+
+(def generate-subquery-forms
+  (for [[id form-labels] subqueries-form-labels]
+    (let [form_id (str "subquery_form_" id)]
+      [:div.subquery_form {:id form_id
+                           :style "display:none"}
+        (for [[field_name label] form-labels]
+          (let [fieldname_id (str form_id "_" field_name)]
+            [:div.control-group
+              [:label.control-label {:for fieldname_id}
+                label]
+              [:div.controls
+                [:input {:type "text"
+                         :id fieldname_id
+                         :name field_name}]]]))
+        [:div.output]])))
+
+(def subquery-pane
+  [:div
+    [:select#subquery_select
+      [:option {:value "input"} "Input Subquery"]
+      [:option {:value "output"} "Output Execution"]]
+    generate-subquery-forms])
+
 (def tool-pane
   [:div
     [:ul.nav.nav-tabs
@@ -48,7 +76,7 @@
       [:div#runner-pane.tab-pane.active
         runner-pane]
       [:div#subqueries-pane.tab-pane
-        "Subqueries"]]])
+        subquery-pane]]])
 
 (defn index-page []
   (html
@@ -60,6 +88,7 @@
       [:script {:src "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"}]
       [:script {:src "http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js"}]
       [:script {:src "/javascript/runner.js"}]
+      [:script {:src "/javascript/subqueries.js"}]
       [:script {:src "/javascript/index.js"}]
       [:style {:type "text/css"
                :media "screen"}
