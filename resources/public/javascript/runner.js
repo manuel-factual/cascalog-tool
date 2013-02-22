@@ -86,6 +86,13 @@ function updateSingleHadoopJobCollapsible(runner_output, job_id, job_status_map)
   var link_url_content = $("<a>").attr("href", job_status_map["job_url"]).attr("target", "_blank").text("Job Tracker Url");
   if (runner_output.find("#" + collapse_id).length == 0) {
     runner_output.append(createCollapsible("Step " + job_status_map["step"], link_url_content, collapse_id));
+  } else {
+    var header = "Step " + job_status_map["step"];
+    if (job_status_map["job_status"]) {
+      header += " (" + job_status_map["job_status"] + ")";
+    }
+
+    updateCollapsible(runner_output.find("#" + collapse_id), header, link_url_content, collapse_id);
   }
 }
 
