@@ -63,7 +63,12 @@
              (generate-text-input-tuple "Subquery to output" "subquery_to_output" "subquery_form_output")
              (generate-select-input-tuple "Output Format" "output_type" "subquery_form_output"
               [["Plain Text" "plain_text"]
-               ["Sequence File" "seqfile"]])]})
+               ["Sequence File" "seqfile"]])]
+
+   "group_by_count" []
+   "group_by_sum" []
+   "filter" []
+   "simple_join" []})
 
 (def subqueries-output-areas
   {"input" [:div.output
@@ -97,7 +102,11 @@
   [:div
     [:select#subquery_select
       [:option {:value "input"} "Input Subquery"]
-      [:option {:value "output"} "Output Execution"]]
+      [:option {:value "output"} "Output Execution"]
+      [:option {:value "group_by_count"} "Group by -> Row Count"]
+      [:option {:value "group_by_sum"} "Group by -> Sum"]
+      [:option {:value "filter"} "Filter by matching values"]
+      [:option {:value "simple_join"} "Join 2 inputs"]]
     generate-subquery-forms])
 
 (def tool-pane
