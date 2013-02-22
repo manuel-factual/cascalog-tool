@@ -50,8 +50,7 @@
   [path]
   (with-open [stream (path->input-stream path)]
     (-> stream
-        line-seq
-        vec)))
+        line-seq)))
 
 (defn hdfs-path->line-seq
   "Get a line-seq of a given path. If a path is a directory, a concatenated sequence of lines
@@ -84,8 +83,11 @@
           (not= -1 (.indexOf first-line "\"")))
      ["json"]
 
+     (= 0 (.length first-line))
+     ["not-found"]
+
      :else
-     [(str "unknown:" (.substring first-line 0 20))])))
+     ["unknown"])))
 
 (defn tap-template
   "Generate a basic input tap template for the given file."
@@ -128,5 +130,8 @@
       (str
        "(def query\n"
        "  (<-\n"
-       "    [?input]"
-       "    ((hfs-textline \"" file "\") ?input)))"))))
+       "    [?input]\n"
+       "    ((hfs-textline \"" file "\") ?input)))")
+
+      "not-found"
+      nil)))

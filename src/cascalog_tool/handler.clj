@@ -125,9 +125,13 @@
 
 (defn get-tap-template
   [file]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body (st/tap-template file)})
+  (if-let [template (st/tap-template file)]
+    {:status 200
+     :headers {"Content-Type" "text/plain"}
+     :body template}
+    {:status 404
+     :headers {"Content-Type" "text/plain"}
+     :body "File not found in hdfs."}))
 
 (defroutes app-routes
   (GET "/" [] (index-page))
