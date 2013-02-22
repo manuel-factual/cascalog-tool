@@ -89,7 +89,7 @@
 (defn index-page []
   (html
     [:head
-      [:title "This is a title..."]
+      [:title "Cascalog Webtool"]
       [:link {:href "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css"
               :rel "stylesheet"}]
       [:script {:src "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"}]
