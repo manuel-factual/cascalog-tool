@@ -2,7 +2,9 @@
 (ns query-sandbox.query
   (:require [cascalog.api :refer :all]
             [cascalog.ops :as c]
-            [clojure.string :as s]))
+            [cheshire.core :as json]
+            [clojure.string :as s])
+  (:gen-class))
 
 (def query
   (<-

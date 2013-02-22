@@ -93,10 +93,17 @@
    :headers {"Content-Type" "text/plain"}
    :body (st/check-file file 10)})
 
+(defn get-tap-template
+  [file]
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body (st/tap-template file)})
+
 (defroutes app-routes
   (GET "/" [] (index-page))
   (GET "/get-runner-output" [] (get-lines-page))
   (GET "/preview-file" {{file-path :file-path} :params} (preview-file file-path))
+  (GET "/input-template" {{file-path :file-path} :params} (get-tap-template file-path))
   (POST "/run" [text] (run-query-func text))
   (route/resources "/")
   (route/not-found "Not Found"))

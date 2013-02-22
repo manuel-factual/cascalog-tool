@@ -1,7 +1,8 @@
 (ns cascalog-tool.smart-taps
   (:require [cascalog.conf :as cc]
             [cheshire.core :as json]
-            [hadoop-util.core :as hadoop])
+            [hadoop-util.core :as hadoop]
+            [clojure.string :as s])
   (:use [clojure.java.io :only (reader)])
   (:import [org.apache.hadoop.fs PathFilter]))
 
@@ -74,14 +75,52 @@
     (cond
      (.startsWith first-line "SEQ")
      (let [first-bang (.indexOf first-line "!")]
-       (.substring first-line 0 first-bang ))
+       [(.substring first-line 0 first-bang )])
 
      (not= -1 (.indexOf first-line "\t"))
-     (str "tsv:" (inc (count (filter (partial = \tab) first-line))))
+     ["tsv" (inc (count (filter (partial = \tab) first-line)))]
 
      (and (not= -1 (.indexOf first-line "{"))
           (not= -1 (.indexOf first-line "\"")))
-     "json"
+     ["json"]
 
      :else
-     (str "unknown:" (.substring first-line 0 20)))))
+     [(str "unknown:" (.substring first-line 0 20))])))
+
+(defn tap-template
+  "Generate a basic input tap template for the given file."
+  [file]
+
+  (let [[guess & maybe-count] (guess-type file)]
+    (condp #(.startsWith %2 %1) guess
+      "SEQ"
+      (str
+       "(def query\n"
+       "  (<-\n"
+       "    [" out-vars "]\n"
+       "    ((hfs-seqfile \"" file "\") ?input-line)))")
+
+      "tsv"
+      (let [out-vars (s/join " " (map str (repeat "?var")
+                                  (range 1 (inc (first maybe-count)))))]
+        (str
+         "(def query\n"
+         "  (<-\n"
+         "    [" out-vars "]\n"
+         "    ((hfs-textline \"" file "\") ?input-line)\n"
+         "    (s/split ?input-line #\"\\t\" :> " out-vars ")))"))
+
+      "json"
+      (str
+       "(def query\n"
+       "  (<-\n"
+       "    [?input]"
+       "    ((hfs-textline \"" file "\") ?input-json)\n"
+       "    (json/decode ?input-json true :> ?input)))")
+
+      "unknown"
+      (str
+       "(def query\n"
+       "  (<-\n"
+       "    [?input]"
+       "    ((hfs-textline \"" file "\") ?input)))"))))
