@@ -57,8 +57,8 @@
       [:script {:src "//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"}]
       [:script {:src "//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"}]
       [:script {:src "http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js"}]
-      [:script {:src "/javascript/index.js"}]
       [:script {:src "/javascript/runner.js"}]
+      [:script {:src "/javascript/index.js"}]
       [:style {:type "text/css"
                :media "screen"}
         "#editor {
@@ -70,14 +70,19 @@
       [:div {:style "float:right;width:50%"}
         tool-pane]
       [:div {:style "float:right;width:50%"}
-        editor-pane]]))
+        editor-pane]
+      [:div#collapsible-template {:style "display:none"}
+        [:ul.nav.nav-stacked.nav-tabs
+          [:li
+            [:a.collapse_link]]]
+        [:div.content]]]))
 
 (defn get-lines-page []
   (json/encode @runner/runner-output))
 
 (defn run-query-func [text]
   (println "Got request")
-  (runner/run-query-func text)
+  (runner/run-query-func-async text)
   (json/encode {:status "OK"}))
 
 (defroutes app-routes

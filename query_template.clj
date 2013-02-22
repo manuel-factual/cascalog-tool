@@ -1,7 +1,8 @@
 ;; Dummy template for query
 (ns query-sandbox.query
   (:require [cascalog.api :refer :all]
-            [cascalog.ops :as c]))
+            [cascalog.ops :as c])
+  (:gen-class))
 
 (def query
   (<-

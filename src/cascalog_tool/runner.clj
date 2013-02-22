@@ -5,9 +5,9 @@
 (def runner-output (atom {}))
 
 (def QUERY_SANDBOX_BASE "query-sandbox")
-(def QUERY_JAR "query-sandbox-*-standalone.jar")
+(def QUERY_JAR "target/query-sandbox-0.1.0-SNAPSHOT-standalone.jar")
 (def QUERY_FILE (str QUERY_SANDBOX_BASE "/src/query_sandbox/query.clj"))
-(def QUERY_CLASS "query-sandbox.query")
+(def QUERY_CLASS "query_sandbox.query")
 
 (defn write-to-file [code]
   (spit QUERY_FILE code))
@@ -20,6 +20,7 @@
     :call-output []
     :call-errors []
     :status :initialize
+    :running true
   }))
 
 (defn append-to-key [keyname line]
@@ -28,6 +29,9 @@
 
 (defn set-status! [status]
   (swap! runner-output #(assoc % :status status)))
+
+(defn set-running! [is-running]
+  (swap! runner-output #(assoc % :running is-running)))
 
 (defn make-uberjar [code]
   (let [_ (write-to-file code)
@@ -53,7 +57,12 @@
     (if (= compile-ret-code 0)
       (do
         (set-status! :running)
-        (call-main))
+        (call-main)
+        (set-running! false))
       (do
         (set-status! :compile-fail)
+        (set-running! false)
         compile-ret-code))))
+
+(defn run-query-func-async [code]
+  (reset! runner-thread (future (run-query-func code))))

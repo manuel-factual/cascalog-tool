@@ -4,6 +4,9 @@ function submitText(text) {
       console.log(data);
     }
   );
+
+  $("#runner_output").empty();
+  setTimeout(pollAndUpdateRunnerOutput, 1000);
 }
 
 $(document).ready(function() {
