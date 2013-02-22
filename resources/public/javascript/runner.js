@@ -61,22 +61,13 @@ function updateCallCollapsible(runner_output, data) {
 
   var call_collapsible = runner_output.find("#" + call_collapse_id);
 
-  var call_output = data["call-output"].join("\n");
   var call_errors = data["call-errors"].join("\n");
   var call_collapse_content = $("<div>");
-
-  if (call_output && call_output.length > 0) {
-    var call_output_div = $("<pre>");
-    call_output_div.text(call_output);
-
-    call_collapse_content.append("<h3>Call Output</h3>");
-    call_collapse_content.append(call_output_div);
-  }
 
   if (call_errors && call_errors.length > 0) {
     var call_errors_div = $("<pre>");
     call_errors_div.text(call_errors);
-    call_collapse_content.append("<h3>Call Errors</h3>");
+    call_collapse_content.append("<h3>Console Output</h3>");
     call_collapse_content.append(call_errors_div);
   }
 

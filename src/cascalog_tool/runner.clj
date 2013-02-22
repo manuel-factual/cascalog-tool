@@ -36,18 +36,18 @@
 (defn make-uberjar [code]
   (let [_ (write-to-file code)
         compile-process (process/exec-shell "lein uberjar" QUERY_SANDBOX_BASE)]
-    (doseq [line (process/get-stdout-lineseq compile-process)]
-      (swap! runner-output (append-to-key :compile-output line)))
-    (doseq [line (process/get-stderr-lineseq compile-process)]
-      (swap! runner-output (append-to-key :compile-errors line)))
+    (future (doseq [line (process/get-stdout-lineseq compile-process)]
+      (swap! runner-output (append-to-key :compile-output line))))
+    (future (doseq [line (process/get-stderr-lineseq compile-process)]
+      (swap! runner-output (append-to-key :compile-errors line))))
     (.waitFor compile-process)))
 
 (defn call-main []
   (let [call-process (process/exec-shell (str "hadoop jar " QUERY_JAR " " QUERY_CLASS) QUERY_SANDBOX_BASE)]
-    (doseq [line (process/get-stdout-lineseq call-process)]
-      (swap! runner-output (append-to-key :call-output line)))
-    (doseq [line (process/get-stderr-lineseq call-process)]
-      (swap! runner-output (append-to-key :call-errors line)))
+    (future (doseq [line (process/get-stdout-lineseq call-process)]
+      (swap! runner-output (append-to-key :call-output line))))
+    (future (doseq [line (process/get-stderr-lineseq call-process)]
+      (swap! runner-output (append-to-key :call-errors line))))
     (.waitFor call-process)))
 
 (defn run-query-func [code]
