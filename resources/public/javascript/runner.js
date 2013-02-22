@@ -97,11 +97,28 @@ function updateSingleHadoopJobCollapsible(runner_output, job_id, job_status_map)
 }
 
 function updateHadoopJobCollapsibles(runner_output, data) {
-  var hadoop_job_statuses = data["hadoop-job-status"];
+  var hadoop_job_statuses = data["hadoop-job-status"]["steps"]
 
   for (var idx in hadoop_job_statuses) {
     var this_status = hadoop_job_statuses[idx];
     updateSingleHadoopJobCollapsible(runner_output, this_status["job_id"], this_status);
+  }
+}
+
+function updateOutputFileCollapsibles(runner_output, data) {
+  var output_files = data["hadoop-job-status"]["output"];
+  if (data["status"] == "completed") {
+    for (var idx in output_files) {
+
+      var output_file = output_files[idx];
+
+      var file_path = output_file["file_path"];
+      var file_url = output_file["file_url"];
+
+      var content_div = $("<div>").append($("<a>").attr("href", file_url).text("Link to HDFS File Browser"));
+
+      runner_output.append(createCollapsible("Completed Output - " + file_path, content_div, "output_" + idx));
+    }
   }
 }
 
@@ -110,6 +127,7 @@ function updateRunnerOutput(data) {
   updateCompileCollapsible(runner_output, data);
   updateCallCollapsible(runner_output, data);
   updateHadoopJobCollapsibles(runner_output, data);
+  updateOutputFileCollapsibles(runner_output, data);
 }
 
 function pollAndUpdateRunnerOutput() {
