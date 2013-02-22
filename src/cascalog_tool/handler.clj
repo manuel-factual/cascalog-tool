@@ -35,14 +35,21 @@
     [:div#runner_output]])
 
 (def subqueries-form-labels
-  {"input" [["path" "HDFS Path to read from"]]
-   "output" [["path" "HDFS Path to output to"]
-             ["subquery" "Subquery to output"]]})
+  {"input" [["file-path" "HDFS Path to read from"]]
+   "output" [["file-path" "HDFS Path to output to"]]})
+
+(def subqueries-output-areas
+  {"input" [:div.output
+            [:h3 "Input Subquery Example"]
+            [:pre.input_template]
+            [:h3 "File Preview"]
+            [:pre.file_preview]]})
 
 (def generate-subquery-forms
   (for [[id form-labels] subqueries-form-labels]
     (let [form_id (str "subquery_form_" id)]
       [:div.subquery_form {:id form_id
+                           :subquery_type id
                            :style "display:none"}
         (for [[field_name label] form-labels]
           (let [fieldname_id (str form_id "_" field_name)]
@@ -50,10 +57,11 @@
               [:label.control-label {:for fieldname_id}
                 label]
               [:div.controls
-                [:input {:type "text"
+                [:input.subquery_input
+                        {:type "text"
                          :id fieldname_id
                          :name field_name}]]]))
-        [:div.output]])))
+        (subqueries-output-areas id)])))
 
 (def subquery-pane
   [:div

@@ -5,10 +5,44 @@ function showActiveSubquery() {
   $("#subquery_form_" + subquery_select).show();
 }
 
+function submitInputSubquery(form) {
+  var file_path = form.find("#subquery_form_input_file-path").val();
+
+  $.get("/input-template", {"file-path" : file_path},
+    function(input_template) {
+      form.find(".output .input_template").text(input_template);
+
+      $.get("/preview-file", {"file-path" : file_path},
+        function(file_preview) {
+          form.find(".output .file_preview").text(file_preview);
+        }
+      )
+    }
+  );
+}
+
+function submitForm(form) {
+  var subquery_type = form.attr("subquery_type");
+
+  if (subquery_type == "input") {
+    submitInputSubquery(form)
+  } else if (subquery_type == "output") {
+    // TODO
+  }
+}
+
+function submitParentForm(input) {
+  submitForm(input.parents(".subquery_form").first());
+}
+
 $(document).ready(function() {
 
   showActiveSubquery();
   $("#subquery_select").change(function () {
     showActiveSubquery();
+  });
+
+  $(".subquery_input").change(function(e) {
+    submitParentForm($(this));
   });
 });
