@@ -4,6 +4,7 @@
         [ring.middleware.params :only [wrap-params]]
         [ring.adapter.jetty :only [run-jetty]])
   (:require [cascalog-tool.runner :as runner]
+            [cascalog-tool.smart-taps :as st]
             [cheshire.core :as json]
             [compojure.handler :as handler]
             [compojure.route :as route])
@@ -85,9 +86,14 @@
   (runner/run-query-func-async text)
   (json/encode {:status "OK"}))
 
+(defn preview-file
+  [file]
+  (st/check-file file 10))
+
 (defroutes app-routes
   (GET "/" [] (index-page))
   (GET "/get-runner-output" [] (get-lines-page))
+  (GET "/preview-file" {{file-path :file} :params} (preview-file file-path))
   (POST "/run" [text] (run-query-func text))
   (route/resources "/")
   (route/not-found "Not Found"))
