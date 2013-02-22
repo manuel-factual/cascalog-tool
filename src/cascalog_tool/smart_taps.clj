@@ -56,6 +56,11 @@
           (-> stream line-seq vec)
           (->> stream line-seq (take number-of-lines) vec)))))
 
+(defn check-file-raw
+  "Look at the first line of an hdfs path."
+  [path]
+  (first (hdfs-file->line-seq (first (get-hdfs-files-in-dir path)) 1)))
+
 (defn check-file
   "Look at the first line of an hdfs path."
   ([path] (check-file path 1))
@@ -85,7 +90,7 @@
    seq file (check first couple characters for the class)
    plain text (tsv, json)"
   [path]
-  (let [first-line (check-file path)]
+  (let [first-line (check-file-raw path)]
     (cond
      (.startsWith first-line "SEQ")
      (let [first-bang (.indexOf first-line "!")]

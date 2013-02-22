@@ -8,6 +8,7 @@
             [cascalog-tool.smart-taps :as st]
             [cascalog-tool.subqueries :as subqueries]
             [cheshire.core :as json]
+            [clojure.string :as s]
             [compojure.handler :as handler]
             [compojure.route :as route])
   (:import clojure.lang.Compiler
@@ -166,19 +167,21 @@
 
 (defn preview-file
   [file]
-  {:status 200
-   :headers {"Content-Type" "text/plain"}
-   :body (st/check-file file 10)})
+  (let [file (s/trim file)]
+    {:status 200
+     :headers {"Content-Type" "text/plain"}
+     :body (st/check-file file 10)}))
 
 (defn get-tap-template
   [file]
-  (if-let [template (st/tap-template file)]
-    {:status 200
-     :headers {"Content-Type" "text/plain"}
-     :body template}
-    {:status 404
-     :headers {"Content-Type" "text/plain"}
-     :body "File not found in hdfs."}))
+  (let [file (s/trim file)]
+    (if-let [template (st/tap-template file)]
+      {:status 200
+       :headers {"Content-Type" "text/plain"}
+       :body template}
+      {:status 404
+       :headers {"Content-Type" "text/plain"}
+       :body "File not found in hdfs."})))
 
 (defroutes app-routes
   (GET "/" [] (index-page))
