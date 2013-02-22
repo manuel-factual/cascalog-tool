@@ -9,8 +9,8 @@
     (let [response (:body (client/get job_url))
           status-matcher (re-matcher #"<b>Status:</b>\s+([^<]+)<br>" response)]
       (if (re-find status-matcher)
-        (second (re-groups status-matcher)))
-        nil)
+        (second (re-groups status-matcher))
+        nil))
     (catch Exception e
       nil)))
 
