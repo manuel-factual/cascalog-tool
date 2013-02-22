@@ -21,13 +21,34 @@ function submitInputSubquery(form) {
   );
 }
 
+function submitGenericSubquery(type, form) {
+  var arg_map  = {subquery_type : type};
+
+  var some_empty = false;
+  form.find(".subquery_input").each(function() {
+    if ((!$(this).val()) || $(this).val() == "")
+      some_empty = true;
+
+    arg_map[$(this).attr("name")] = $(this).val();
+  });
+
+  if (!some_empty) {
+    $.get("/get-subquery-template", arg_map,
+      function(query_template) {
+        form.find(".output .query_template").text(query_template);
+      }
+    );
+  }
+}
+
+
 function submitForm(form) {
   var subquery_type = form.attr("subquery_type");
 
   if (subquery_type == "input") {
     submitInputSubquery(form)
-  } else if (subquery_type == "output") {
-    // TODO
+  } else {
+    submitGenericSubquery(subquery_type, form)
   }
 }
 

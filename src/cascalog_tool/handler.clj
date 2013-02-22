@@ -6,6 +6,7 @@
   (:require [cascalog-tool.runner :as runner]
             [cascalog-tool.hadoop-parser :as hadoop-parser]
             [cascalog-tool.smart-taps :as st]
+            [cascalog-tool.subqueries :as subqueries]
             [cheshire.core :as json]
             [compojure.handler :as handler]
             [compojure.route :as route])
@@ -34,9 +35,35 @@
     [:a#submit_link.btn.btn-success "Submit!"]
     [:div#runner_output]])
 
-(def subqueries-form-labels
-  {"input" [["file-path" "HDFS Path to read from"]]
-   "output" [["file-path" "HDFS Path to output to"]]})
+(defn get-form-input-id [form_id input_name]
+  (str form_id "_" input_name))
+
+(defn generate-text-input-tuple
+  [label name subquery_form_id]
+  (let [input_id (get-form-input-id subquery_form_id name)]
+    [label name input_id
+       [:input.subquery_input {:name name
+                               :id input_id}]]))
+
+(defn generate-select-input-tuple
+  [label name subquery_form_id label-values]
+  (let [input_id (get-form-input-id subquery_form_id name)]
+    [label name input_id
+       [:select.subquery_input {:name name
+                                :id input_id}
+        (map
+          (fn [[label val]]
+            [:option {:value val} label])
+          label-values)]]))
+
+(def subqueries-form-inputs
+  {"input" [(generate-text-input-tuple "HDFS Path to read from" "file-path" "subquery_form_input")]
+
+   "output" [(generate-text-input-tuple "HDFS Path to output to" "output_path" "subquery_form_output")
+             (generate-text-input-tuple "Subquery to output" "subquery_to_output" "subquery_form_output")
+             (generate-select-input-tuple "Output Format" "output_type" "subquery_form_output"
+              [["Plain Text" "plain_text"]
+               ["Sequence File" "seqfile"]])]})
 
 (def subqueries-output-areas
   {"input" [:div.output
@@ -45,23 +72,26 @@
             [:h3 "File Preview"]
             [:pre.file_preview]]})
 
+(def generic-subquery-output-area
+  [:div.output
+    [:h3 "Subquery Example"]
+    [:pre.query_template]])
+
 (def generate-subquery-forms
-  (for [[id form-labels] subqueries-form-labels]
+  (for [[id form-inputs] subqueries-form-inputs]
     (let [form_id (str "subquery_form_" id)]
       [:div.subquery_form {:id form_id
                            :subquery_type id
                            :style "display:none"}
-        (for [[field_name label] form-labels]
-          (let [fieldname_id (str form_id "_" field_name)]
-            [:div.control-group
-              [:label.control-label {:for fieldname_id}
-                label]
-              [:div.controls
-                [:input.subquery_input
-                        {:type "text"
-                         :id fieldname_id
-                         :name field_name}]]]))
-        (subqueries-output-areas id)])))
+        (for [[label field_name id input] form-inputs]
+          [:div.control-group
+            [:label.control-label {:for id}
+              label]
+            [:div.controls
+              input]])
+        (if-let [custom-output-area (subqueries-output-areas id)]
+          custom-output-area
+          generic-subquery-output-area)])))
 
 (def subquery-pane
   [:div
@@ -127,32 +157,26 @@
 
 (defn preview-file
   [file]
-  (if file
-    {:status 200
-     :headers {"Content-Type" "text/plain"}
-     :body (st/check-file file 10)}
-    {:status 400
-     :body "Specify file-path"}
-    ))
+  {:status 200
+   :headers {"Content-Type" "text/plain"}
+   :body (st/check-file file 10)})
 
 (defn get-tap-template
   [file]
-  (if (nil? file)
-    {:status 400
-     :body "Specify file-path"}
-    (if-let [template (st/tap-template file)]
-      {:status 200
-       :headers {"Content-Type" "text/plain"}
-       :body template}
-      {:status 404
-       :headers {"Content-Type" "text/plain"}
-       :body "File not found in hdfs."})))
+  (if-let [template (st/tap-template file)]
+    {:status 200
+     :headers {"Content-Type" "text/plain"}
+     :body template}
+    {:status 404
+     :headers {"Content-Type" "text/plain"}
+     :body "File not found in hdfs."}))
 
 (defroutes app-routes
   (GET "/" [] (index-page))
   (GET "/get-runner-output" [] (get-lines-page))
   (GET "/preview-file" {{file-path :file-path} :params} (preview-file file-path))
   (GET "/input-template" {{file-path :file-path} :params} (get-tap-template file-path))
+  (GET "/get-subquery-template" [subquery_type & arg-map] (subqueries/get-subquery-template subquery_type arg-map))
   (POST "/run" [text] (run-query-func text))
   (route/resources "/")
   (route/not-found "Not Found"))
