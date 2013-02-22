@@ -91,18 +91,24 @@
   "Generate a basic input tap template for the given file."
   [file]
 
-  (let [[guess & maybe-count] (guess-type file)]
+  (let [[guess & extra] (guess-type file)]
     (condp #(.startsWith %2 %1) guess
       "SEQ"
-      (str
-       "(def query\n"
-       "  (<-\n"
-       "    [?input]\n"
-       "    ((thrift-dirtree-to-map-tap \"" file "\") ?input)))")
+      (if (not= -1 (.indexOf "com.factual.common.thrift."))
+        (str
+         "(def query\n"
+         "  (<-\n"
+         "    [?input]\n"
+         "    ((thrift-dirtree-to-map-tap \"" file "\") ?input)))")
+        (str
+         "(def query\n"
+         "  (<-\n"
+         "    [?input]"
+         "    ((hfs-seqfile \"" file "\") <fill in out-vars>)))"))
 
       "tsv"
       (let [out-vars (s/join " " (map str (repeat "?var")
-                                  (range 1 (inc (first maybe-count)))))]
+                                  (range 1 (inc (first extra)))))]
         (str
          "(def query\n"
          "  (<-\n"
