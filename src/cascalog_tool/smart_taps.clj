@@ -77,12 +77,13 @@
      (let [first-bang (.indexOf first-line "!")]
        [(.substring first-line 0 first-bang )])
 
+     (and (not= -1 (.indexOf first-line "{"))
+          (not= -1 (.indexOf first-line "\""))
+          (not= -1 (.indexOf first-line "}")))
+     ["json"]
+
      (not= -1 (.indexOf first-line "\t"))
      ["tsv" (inc (count (filter (partial = \tab) first-line)))]
-
-     (and (not= -1 (.indexOf first-line "{"))
-          (not= -1 (.indexOf first-line "\"")))
-     ["json"]
 
      (= 0 (.length first-line))
      ["not-found"]
@@ -117,7 +118,7 @@
          "  (<-\n"
          "    [" out-vars "]\n"
          "    ((hfs-textline \"" file "\") ?input-line)\n"
-         "    (s/split ?input-line #\"\\t\" :> " out-vars ")))"))
+         "    (s/split ?input-line #\"\\t\" -1 :> " out-vars ")))"))
 
       "json"
       (str
