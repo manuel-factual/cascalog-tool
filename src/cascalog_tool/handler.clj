@@ -28,8 +28,10 @@
                 "Submit"]]]]]]])
 
 (def editor-pane
-  [:div {:id "editor"}
-       (slurp QUERY_FILE_TEMPLATE)])
+  [:div
+    [:div {:id "editor"}
+         (slurp QUERY_FILE_TEMPLATE)]
+    [:div#reset_storage.btn.btn-danger "Reset Editor"]])
 
 (def runner-pane
   [:div
