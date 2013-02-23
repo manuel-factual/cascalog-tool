@@ -115,7 +115,7 @@ function updateOutputFileCollapsibles(runner_output, data) {
       var file_path = output_file["file_path"];
       var file_url = output_file["file_url"];
 
-      var content_div = $("<div>").append($("<a>").attr("href", file_url).text("Link to HDFS File Browser"));
+      var content_div = $("<div>").append($("<a>").attr("href", file_url).attr("target","_blank").text("Link to HDFS File Browser"));
 
       runner_output.append(createCollapsible("Completed Output - " + file_path, content_div, "output_" + idx));
     }
