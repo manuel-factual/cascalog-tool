@@ -37,5 +37,7 @@ $(document).ready(function() {
   $("#reset_storage").click(function(e) {
     e.preventDefault();
     delete localStorage["editor"];
+    window.onbeforeunload = null;
+    location.reload();
   });
 })
