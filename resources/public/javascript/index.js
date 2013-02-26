@@ -12,7 +12,7 @@ function submitText(text) {
 
 $(document).ready(function() {
   editor = ace.edit("editor");
-  editor.setTheme("ace/theme/monokai");
+  editor.setTheme("ace/theme/idle_fingers");
   editor.getSession().setMode("ace/mode/clojure");
 
   function persistEditor() {
