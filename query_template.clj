@@ -4,7 +4,8 @@
             [cascalog.ops :as c]
             [cascalog-toolbox.core :refer (thrift-dirtree-to-map-tap)]
             [cheshire.core :as json]
-            [clojure.string :as s])
+            [clojure.string :as s]
+            [datastore-cascalog.taps.keyval :as kv])
   (:gen-class))
 
 (def query

@@ -126,8 +126,8 @@
         (str
          "(def query\n"
          "  (<-\n"
-         "    [<fill-in-vars>]"
-         "    ((hfs-seqfile \"" file "\") <fill-in-vars>)))"))
+         "    [?key ?val]\n"
+         "    ((kv/hfs-keyval \"" file "\") ?key ?val)))"))
 
       "tsv"
       (let [out-vars (s/join " " (map str (repeat "?var")
